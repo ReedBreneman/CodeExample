@@ -18,7 +18,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		LOGGER.setLevel(Level.FINEST);
+		LOGGER.setLevel(Level.SEVERE);
 		
 		String[] inputData = {
 				   "A B C",
@@ -26,7 +26,9 @@ public class Main {
 				   "C G",
 				   "D A F",
 				   "E F",
-				   "F H"
+				   "F H",
+				   "",
+				   "W"
 				};
 		
 		DependencyEvaluator de = new DependencyEvaluator(inputData);

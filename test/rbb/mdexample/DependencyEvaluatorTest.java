@@ -7,6 +7,10 @@ package rbb.mdexample;
 
 import static org.junit.Assert.*;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -15,7 +19,16 @@ import org.junit.runners.MethodSorters;
 public class DependencyEvaluatorTest {
 
 	String[] mInputData = { "A B" };
+
+	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
+	/** 
+	 * Setup the Logger so that logging level is as expected during junit Tests.
+	 */
+	@BeforeClass
+	public static void init() {
+		LOGGER.setLevel(Level.SEVERE);
+	}
 	
 	/**
 	 * Test the constructor with no data passed in.
@@ -48,6 +61,18 @@ public class DependencyEvaluatorTest {
 		DependencyEvaluator de = new DependencyEvaluator();
 		de.setInputData(mInputData);
 		evaluateOutputWithInputData(de.generateOutput());
+	}	
+	
+	/**
+	 * Test the empty constructor and setInputData() with invalid data .
+	 */
+	@Test
+	public void testInvalidInputData() {
+		String[] invalidData = { "", "W" };
+		DependencyEvaluator de = new DependencyEvaluator();
+		de.setInputData(invalidData);
+		String output = de.generateOutput();
+		assertEquals("Empty String is expected output for invalid data", "", output);
 	}	
 	
 	/** 

@@ -8,9 +8,9 @@
  * void   calculate() is used to generate the dependency lists.
  * String generateOutput() will generate the output string, calling calculate() first if necessary.
  * 
- * TODO - consider adding a clear() to all evaluating multiple input data sets.
- * 
  * @author reed
+ * 
+ * TODO - consider adding a clear() to all evaluating multiple input data sets.
  */
 package rbb.mdexample;
 
@@ -58,7 +58,12 @@ public class DependencyEvaluator {
     	LOGGER.info("Processing input");
     	if (inputData.length > 0) {
     		for (int i = 0; i < inputData.length; i++) {
-    			processInputLine(inputData[i]);
+    			try {
+    				processInputLine(inputData[i]);
+    			} catch (InputValidationException ive) {
+    				// Perhaps throw again if desire to exit without results generated if that is desired behavior.
+    				LOGGER.severe("Exception encounterered processing input on line " + (i+1) + ": " + ive.getMessage());
+    			}
     		}
     	}
     }
@@ -70,23 +75,28 @@ public class DependencyEvaluator {
      * 
      * A single line of input is Key Dependency [Dependency...]
      * @param line
+     * @throws InputValidationException 
      */
-	private void processInputLine(String line) {
+	private void processInputLine(String line) throws InputValidationException {
 		LOGGER.finer(line);
 		
 		if (null != line) {		
 			String[] elements = line.split(FIELD_DELIMITER);
 			
-			if (elements.length > 0) {
-				String key = elements[0];
-
-				// Wrap Arrays.asList in ArrayList to allow for modifications.
-				ArrayList<String> children = new ArrayList<>(Arrays.asList(elements));
-				children.remove(key); //Since doing a bulk add of all entries on the line, remove the key from the list of children.
-				
-				LOGGER.finer("Getting descendents of " + key + " - " + children);
-				DependencyNode node = new DependencyNode(key, children);
-				mNodes.put(key, node);
+			String key = elements[0];
+			if (!key.isEmpty()) {
+				// Make sure there are children in the input line
+				if (elements.length > 1) {			
+					// Wrap Arrays.asList in ArrayList to allow for modifications.
+					ArrayList<String> children = new ArrayList<>(Arrays.asList(elements));
+					children.remove(key); //Since doing a bulk add of all entries on the line, remove the key from the list of children.
+					
+					LOGGER.finer("Getting descendents of " + key + " - " + children);
+					DependencyNode node = new DependencyNode(key, children);
+					mNodes.put(key, node);
+				} else {
+					throw new InputValidationException("Row with key \'" + key + "\' does not contain any dependencies");
+				}
 			}
 		}
 	}

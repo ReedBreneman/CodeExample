@@ -10,8 +10,11 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DependencyNodeTest {
@@ -20,14 +23,31 @@ public class DependencyNodeTest {
 	final private static String CHILD1 = "B";
 	final private static  String CHILD2 = "C";
 	private ArrayList<String> children;
+
+	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
+	
+	/** 
+	 * Setup the Logger so that logging level is as expected during junit Tests.
+	 */
+	@BeforeClass
+	public static void init() {
+		LOGGER.setLevel(Level.SEVERE);
+	}
+	
+	/**
+	 * Setup the initial children list used in most of the tests.
+	 */
 	@Before
-	public void init() {
+	public void setup() {
 		children = new ArrayList<>();
 		children.add(CHILD1);
 		children.add(CHILD2);		
 	}
 	
+	/**
+	 * Test the default Constructor and the data returned from each getter matches what is expected from the initial state.
+	 */
 	@Test
 	public void testConstructor() {
 		Set<String> childrenResult = new HashSet<>();
