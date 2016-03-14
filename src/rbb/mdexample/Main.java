@@ -18,7 +18,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		LOGGER.setLevel(Level.SEVERE);
+		LOGGER.setLevel(Level.FINEST);
 		
 		String[] inputData = {
 				   "A B C",
@@ -26,15 +26,17 @@ public class Main {
 				   "C G",
 				   "D A F",
 				   "E F",
-				   "F H",
-				   "W"
+				   "F H"
 				};
 	
+		DependencyEvaluator de = new DependencyEvaluator();
+		de.setInputData(inputData);
+		String result = de.generateOutput();
+		System.out.println("Result 1: \n" + result);
 		
-		System.out.println("Example:");
-		for (int i = 0; i<inputData.length; i++) {
-			System.out.println(inputData[i]);
-		}
+		de = new DependencyEvaluator(inputData);
+		result = de.generateOutput();
+		System.out.println("Result 2: \n" + result);
 	}
 
 }
