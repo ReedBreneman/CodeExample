@@ -16,7 +16,7 @@ then A also depends on C.
 1 | A   B   C  
 2 | B   C   E  
 3 | C   G  
-4 | D  A   F  
+4 | D   A   F  
 5 | E   F  
 6 | F   H 
 ```
