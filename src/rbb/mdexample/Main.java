@@ -31,7 +31,7 @@ public class Main {
 		
 		DependencyEvaluator de = new DependencyEvaluator(inputData);
 		String result = de.generateOutput();
-		System.out.println("Result 2: \n" + result);
+		System.out.println("Result: \n" + result);
 	}
 
 }
