@@ -1,11 +1,22 @@
+/**
+ * The jUnit tests for Dependency Evaluator.
+ * 
+ * @author reed
+ */
 package rbb.mdexample;
 
 import static org.junit.Assert.*;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.JVM)
 public class DependencyEvaluatorTest {
 
+	String[] mInputData = { "A B" };
+	
+	
 	/**
 	 * Test the constructor with no data passed in.
 	 */
@@ -16,31 +27,35 @@ public class DependencyEvaluatorTest {
 		assertEquals( "Output does not match expected output", "Example: \n", output);
 	}
 	
+	
 	/** 
 	 * Test the constructor passing in a sample data String;
 	 */
 	@Test
 	public void testStringArrayConstructor() {
-		String[] inputData = { "A B" };
 		
-		DependencyEvaluator de = new DependencyEvaluator(inputData);
-		String output = de.generateOutput();
-		assertTrue("\'Example:\' string not found in output", output.contains("Example:"));
-		assertTrue("\'A B\' string not found in output", output.contains("A B"));
+		DependencyEvaluator de = new DependencyEvaluator(mInputData);
+		evaluateOutputWithInputData(de.generateOutput());
 	}
+	
 	
 	/**
 	 * Test the empty constructor and setInputData() method.
 	 */
 	@Test
 	public void testSetInputData() {
-		String[] inputData = { "A B" };
-		
 		DependencyEvaluator de = new DependencyEvaluator();
-		de.setInputData(inputData);
-		String output = de.generateOutput();
+		de.setInputData(mInputData);
+		evaluateOutputWithInputData(de.generateOutput());
+	}	
+	
+	/** 
+	 * Validate that the output string matches what we expect with the default 'A B' input data.
+	 * @param output The output string to validate.
+	 */
+	private void evaluateOutputWithInputData(String output) {
 		assertTrue("\'Example:\' string not found in output", output.contains("Example:"));
 		assertTrue("\'A B\' string not found in output", output.contains("A B"));
-	}	
+	}
 
 }
