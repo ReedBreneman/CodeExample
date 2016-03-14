@@ -21,10 +21,12 @@ import java.util.logging.Logger;
 
 public class DependencyNode {
 
-	// Booleans to keep track of Node Processing status...
-	// mProcessing is set once the node starts processing
-	// mChildrenProcessing is set if it's identified that one or more descendants are processing
-	// mExpanded is set when all descendants have been fully expanded.
+	/**
+	* Booleans to keep track of Node Processing status...
+	* mProcessing is set once the node starts processing
+	* mChildrenProcessing is set if it's identified that one or more descendants are processing
+	* mExpanded is set when all descendants have been fully expanded.
+	*/
 	boolean mProcessing = false;
 	boolean mExpanded = false;
 	boolean mDescendantProcessing = false;
@@ -69,13 +71,18 @@ public class DependencyNode {
 	public boolean isProcessing() {
 		return mProcessing;
 	}
-	
+
+	/**
+	 * Set the processing flag to the input value.
+	 * @param processing
+	 */
 	public void setProcessing(boolean processing) {
 		mProcessing = processing;
 	}
  
 	/**
 	 * The processed flag will be true when all children have been fully expanded and no more processing is expected.
+	 * This is controlled internally, so no setters provided.
 	 * @return
 	 */
 	public boolean isExpanded() {

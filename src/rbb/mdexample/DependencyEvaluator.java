@@ -89,7 +89,9 @@ public class DependencyEvaluator {
 				if (elements.length > 1) {			
 					// Wrap Arrays.asList in ArrayList to allow for modifications.
 					ArrayList<String> children = new ArrayList<>(Arrays.asList(elements));
-					children.remove(key); //Since doing a bulk add of all entries on the line, remove the key from the list of children.
+					//Since doing a bulk add of all entries on the line, remove the key from the list of children.
+					//This also handles the case where a key is part of the children.
+					children.remove(key); 
 					
 					LOGGER.finer("Getting descendents of " + key + " - " + children);
 					DependencyNode node = new DependencyNode(key, children);

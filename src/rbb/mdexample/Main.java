@@ -26,9 +26,7 @@ public class Main {
 				   "C G",
 				   "D A F",
 				   "E F",
-				   "F H",
-				   "",
-				   "W"
+				   "F H"
 				};
 		
 		DependencyEvaluator de = new DependencyEvaluator(inputData);
