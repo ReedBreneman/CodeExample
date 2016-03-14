@@ -1,5 +1,5 @@
 /**
- * The jUnit tests for Dependency Evaluator.
+ * The jUnit tests for DependencyEvaluator.
  * 
  * @author reed
  */
@@ -24,7 +24,8 @@ public class DependencyEvaluatorTest {
 	public void testEmptyConstructor() {
 		DependencyEvaluator de = new DependencyEvaluator();
 		String output = de.generateOutput();
-		assertEquals( "Output does not match expected output", "Example: \n", output);
+		// With no input data, there will be no output
+		assertEquals( "Output does not match expected output", "", output);
 	}
 	
 	
@@ -54,8 +55,9 @@ public class DependencyEvaluatorTest {
 	 * @param output The output string to validate.
 	 */
 	private void evaluateOutputWithInputData(String output) {
-		assertTrue("\'Example:\' string not found in output", output.contains("Example:"));
-		assertTrue("\'A B\' string not found in output", output.contains("A B"));
+		System.out.println(output);
+//		assertTrue("\'Example:\' string not found in output", output.contains("Example:"));
+		assertTrue("\'A [B]\' string not found in output", output.contains("A [B]"));
 	}
 
 }
