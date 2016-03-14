@@ -91,8 +91,6 @@ public class DependencyEvaluator {
 		}
 	}
 
- 
-	
 	/**
 	 * Generate the output from the dependency set.  
 	 */
