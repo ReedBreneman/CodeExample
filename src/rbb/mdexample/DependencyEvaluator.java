@@ -94,8 +94,13 @@ public class DependencyEvaluator {
 					children.remove(key); 
 					
 					LOGGER.finer("Getting descendents of " + key + " - " + children);
-					DependencyNode node = new DependencyNode(key, children);
-					mNodes.put(key, node);
+					DependencyNode node = mNodes.get(key);
+					if (null == node) {
+						node = new DependencyNode(key, children);
+						mNodes.put(key, node);
+					} else { // The node already exists, so add the children to the list.
+						node.addChildren(children);
+					}
 				} else {
 					throw new InputValidationException("Row with key \'" + key + "\' does not contain any dependencies");
 				}
@@ -120,7 +125,10 @@ public class DependencyEvaluator {
 		for (DependencyNode node : mNodes.values()) {
 			output.append(node.getKey());
 			output.append(" ");
-			output.append(node.getChildren().toString()).append("\n");
+			for (String dependency : node.getAllDescendants()) {
+				output.append(" ").append(dependency);
+			}
+			output.append("\n");
 		}
 		
 		return output.toString();
@@ -131,7 +139,11 @@ public class DependencyEvaluator {
 	 */
 	public void calculate() {
 		LOGGER.info("Calculating Dependencies");
-		//TODO - add calculation code
-		mCalculated = true;
+
+		// Iterate thru the nodes and determine all descendants of each node. 
+		// Each node will determine the descendants for its children and children's children, etc. 
+		for (DependencyNode node : mNodes.values()) {
+			node.determineDescendents(mNodes);
+		}
 	}
 }

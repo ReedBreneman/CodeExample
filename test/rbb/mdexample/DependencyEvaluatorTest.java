@@ -81,7 +81,7 @@ public class DependencyEvaluatorTest {
 	 */
 	private void evaluateOutputWithInputData(String output) {
 		System.out.println(output);
-		assertTrue("\'A [B]\' string not found in output", output.contains("A [B]"));
+		assertTrue("\'A  B\' string not found in output", output.contains("A  B"));
 	}
-
+	
 }

@@ -8,7 +8,9 @@ package rbb.mdexample;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,7 +63,6 @@ public class DependencyNodeTest {
 		assertEquals("DependencyNode children not as expected", childrenResult, dn.getChildren());
 		assertEquals("DependencyNode allDescendents not as expected", descendentResult, dn.getAllDescendants());
 		assertFalse("DependencyNode processing not as expected", dn.isProcessing());
-		assertFalse("DependencyNode childrenProcessing not as expected", dn.isDescendantProcessing());
 		assertFalse("DependencyNode expanded not as expected", dn.isExpanded());
 	}
 	
@@ -80,17 +81,77 @@ public class DependencyNodeTest {
 	}
 	
 	/**
-	 * Test the setChildrenProcessing() & areChildrenProcessing() methods
+	 * Test a simple calculate with only one node & no non-child descendants
 	 */
 	@Test
-	public void testGetSetChildrenProcessing() {
+	public void testSimpleCalculate() {
 		DependencyNode dn = new DependencyNode(M_KEY, children);
+		
+		Map<String, DependencyNode> nodeMap = new HashMap<>();
+		nodeMap.put(M_KEY, dn);
 
-		// Initial isProcessing tested in testConstructor
-		dn.setDescendantProcessing(true);
-		assertTrue("DependencyNode processing not as expected", dn.isDescendantProcessing());
-		dn.setDescendantProcessing(false);
-		assertFalse("DependencyNode processing not as expected", dn.isDescendantProcessing());
+		Set<String> descendentResult = new HashSet<>();  //Will be empty unless calculated.
+		descendentResult.add("B");
+		descendentResult.add("C");
+		
+		dn.determineDescendents(nodeMap);
+		assertTrue("Post Caldulate expanded is incorrect", dn.isExpanded());
+		assertFalse("Post Calculate prcessing is incorrect", dn.isProcessing());
+		System.out.println("SimpleCalc" + dn.getKey() + " - " + dn.getAllDescendants());
+		assertEquals("Post Calculate all Descendents is incorrect", descendentResult, dn.getAllDescendants());
 	}
 
+	/**
+	 * Test a simple calculate with only one node & no non-child descendants
+	 */
+	@Test
+	public void testDescendantCalculate() {
+		DependencyNode dn = new DependencyNode(M_KEY, children);
+		
+		Map<String, DependencyNode> nodeMap = new HashMap<>();
+		nodeMap.put(M_KEY, dn);
+		ArrayList<String> childList = new ArrayList<>();
+		childList.add("C");
+		childList.add("D");
+		DependencyNode dn2 = new DependencyNode("B", childList);
+		nodeMap.put("B", dn2);
+	
+		Set<String> descendentResult = new HashSet<>();  //Will be empty unless calculated.
+		descendentResult.add("B");
+		descendentResult.add("C");
+		descendentResult.add("D");
+		
+		dn.determineDescendents(nodeMap);
+		assertTrue("Post Caldulate isExpanded is incorrect", dn.isExpanded());
+		assertFalse("Post Calculate isProcessing is incorrect", dn.isProcessing());
+		System.out.println("DescCalc" + dn.getKey() + " - " + dn.getAllDescendants());
+		assertEquals("Post Calculate all Descendents is incorrect", descendentResult, dn.getAllDescendants());
+	}	
+
+	/**
+	 * Test a simple calculate with only one node & no non-child descendants
+	 */
+	@Test
+	public void testCircularCalculate() {
+		DependencyNode dn = new DependencyNode(M_KEY, children);
+		
+		Map<String, DependencyNode> nodeMap = new HashMap<>();
+		nodeMap.put(M_KEY, dn);
+		ArrayList<String> childList = new ArrayList<>();
+		childList.add("C");
+		childList.add("A");
+		DependencyNode dn2 = new DependencyNode("B", childList);
+		nodeMap.put("B", dn2);
+	
+		Set<String> descendentResult = new HashSet<>();  //Will be empty unless calculated.
+		descendentResult.add("A");
+		descendentResult.add("B");
+		descendentResult.add("C");
+		
+		dn.determineDescendents(nodeMap);
+		assertTrue("Post Caldulate isExpanded is incorrect", dn.isExpanded());
+		assertFalse("Post Calculate isProcessing is incorrect", dn.isProcessing());
+		System.out.println("CircCalc" + dn.getKey() + " - " + dn.getAllDescendants());
+		assertEquals("Post Calculate circular Descendents is incorrect", descendentResult, dn.getAllDescendants());
+	}	
 }

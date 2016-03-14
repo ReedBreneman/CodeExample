@@ -15,6 +15,7 @@ package rbb.mdexample;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
@@ -122,5 +123,40 @@ public class DependencyNode {
 		return mAllDescendants;
 	}
 	
+	/** 
+	 * Expand the child nodes for this node by evaluating the children against the nodeSet supplied to this node.
+	 * 
+	 * @param nodeSet
+	 */
+	protected void determineDescendents(Map<String, DependencyNode> nodeSet) {
+		LOGGER.finer("Calculating Node " + mKey);
+		
+		mProcessing = true;
+		if (!mExpanded) {
+			mAllDescendants.addAll(mChildren);     //Add the direct children to the all descendants list.
+	
+			setDescendantProcessing(false);
+			//Now iterate thru and add in all the grand children, etc...
+			for (String child : mChildren) {
+				LOGGER.finest("  Processing Child " + mKey + " - " + child);
+				
+				// Get the child node from the supplied nodeSet domain.
+				DependencyNode childNode = nodeSet.get(child);
+				if (null != childNode) {            // Make sure the child is also a parent to prevent errors.  
+					if (!childNode.isExpanded()) {  // If the child is not already calculated, do the calculation.
+						if (!childNode.isProcessing()) {  //If the node is already being processed, we don't need to process again.
+							childNode.determineDescendents(nodeSet);
+						} else {
+							setDescendantProcessing(true);
+						}
+					}
+					// Add all the descendants from the child to the list of this node descendants. 
+					mAllDescendants.addAll(childNode.getAllDescendants());  
+				}
+			}
+			mExpanded = true && !isDescendantProcessing();
+		}
+		mProcessing = false;  //We are done, so set processing to false;
+	}	
 
 }
