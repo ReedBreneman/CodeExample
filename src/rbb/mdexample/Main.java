@@ -28,14 +28,9 @@ public class Main {
 				   "E F",
 				   "F H"
 				};
-	
-		DependencyEvaluator de = new DependencyEvaluator();
-		de.setInputData(inputData);
-		String result = de.generateOutput();
-		System.out.println("Result 1: \n" + result);
 		
-		de = new DependencyEvaluator(inputData);
-		result = de.generateOutput();
+		DependencyEvaluator de = new DependencyEvaluator(inputData);
+		String result = de.generateOutput();
 		System.out.println("Result 2: \n" + result);
 	}
 
