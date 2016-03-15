@@ -49,7 +49,7 @@ The default input file is './data/input.dat'.
 
 There is a compiled DependencyEvaluator.jar file is available in the 'deploy' folder.
 The main ant tasks are:  
-    cleanall  This will clean up the output folders in preparation for a clean build.  
-    jar       This will compile the source & place DependencyEvaluator.jar in the ./deploy directory.  
-    runTests  This will execute the junit tests & generate a report in the ./testclasses/report/index.html  
+    cleanall - This will clean up the output folders in preparation for a clean build.  
+    jar  -     This will compile the source & place DependencyEvaluator.jar in the ./deploy directory.  
+    runTests - This will execute the junit tests & generate a report in the ./testclasses/report/index.html  
     
