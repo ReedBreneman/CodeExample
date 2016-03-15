@@ -160,7 +160,7 @@ public class DependencyEvaluator {
 	}
 	
 	/**
-	 * Process a list of nodes to determine dependents.   
+	 * Process a list of nodes to determine dependents. Method is protected instead of private to allow unit testing.
 	 * @param nodes               The Collection of nodes to process;
 	 * @return reprocessingNodes  The collection of nodes that may need reprocessing;
 	 */
