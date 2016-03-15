@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<project xmlns="antlib:org.apache.tools.ant" default="jar" basedir=".">
+<!--
+==========================================================================
+
+                   PROPERTY DECLARARIONS     
+
+==========================================================================
+-->
+    <property name="base.build.dir" location="${basedir}"/>
+    <property name="javac.target" value="1.8"/>
+
+    <tstamp>
+        <format property="BUILD_TIME" pattern="yyyy-MM-dd HH:mm:ss zzz"/>
+    </tstamp>
+
+    <property name="src.dir" location="${base.build.dir}/src"/>
+	<property name="src.classes.dir" location="${base.build.dir}/classes"/>
+	
+    <property name="test.dir" location="${base.build.dir}/test"/>
+	<property name="test.classes.dir" location="${base.build.dir}/testclasses"/>
+
+    <property name="deploy.dir" location="${base.build.dir}/deploy"/>
+	<property name="jar.name" value="DependencyEvaluator.jar"/>
+
+	<property name="mockito.dir" location="${src.dir}/lib" />
+	<property name="mockito.jar" value="mockito-all-1.10.19.jar" />
+
+	<property name="junit.dir" location="${base.build.dir}/../../../.p2/pool/plugins/org.junit_4.12.0.v201504281640" />
+	<property name="junit.jar" value="junit.jar"/>
+	
+    <path id="classpath">
+        <pathelement location = "${src.classes.dir}" />
+    </path>	
+	
+    <path id="test.classpath">
+        <path refid="classpath" />
+        <pathelement location="${test.classes.dir}" />
+        <pathelement location="${junit.dir}/${junit.jar}" />  
+        <pathelement location="${mockito.dir}/${mockito.jar}" />
+    </path>
+<!--
+==========================================================================
+    Clean out the build results folders.
+    Use the individual projects to clean out their build folders.
+==========================================================================
+-->    
+
+    <target name="cleanall" depends="clean" description="Clean the build, test and deploy directories"/>
+	
+	<target name="cleanTests" description="Clean the tests directory">
+		<delete includeemptydirs="true" quiet="true">
+            <fileset dir="${test.classes.dir}" includes="**/*"/>
+	    </delete>
+	</target>
+	
+    <target name="clean" depends="cleanTests" description="Clean the build output directories">
+        <delete includeemptydirs="true" quiet="true">
+            <fileset dir="${deploy.dir}" includes="**/*" />
+            <fileset dir="${src.classes.dir}" includes="**/*"/>
+        </delete>
+    </target>
+
+<!--
+==========================================================================
+    Create folders to hold the output of the builds.
+==========================================================================
+-->    
+
+    <target name="init" depends="clean" description="Create the deployment directory - deploy">
+        <tstamp/>
+        <mkdir dir="${deploy.dir}"/>
+    </target>
+	
+	<target name="initTests" depends="cleanTests" description="Create the testclasses dir">
+		<mkdir dir="${test.classes.dir}"/>
+        <condition property="${testDir.exists}">
+            <available file="${test.dir}" type="dir"/>
+        </condition>
+	</target>
+		
+
+<!--
+==========================================================================
+
+                     COMPILE AND BUILD PROJECT
+
+==========================================================================
+-->
+	<target name="build" depends="init, jar" description="Compile and packages projects">
+	    <antcall target="projects.target.invoke">
+	        <param name="target.name" value="package"/>
+	    </antcall>
+	</target>
+	
+<!--
+==========================================================================
+
+                        Compiling Java Files
+
+==========================================================================
+-->
+	<target name="compile" description="Compile target with debug parameter">
+	    <delete includeemptydirs="true" quiet="true">
+	        <fileset dir="${src.classes.dir}" includes="**/*"/>
+	    </delete>
+	    <mkdir dir="${src.classes.dir}"/>
+	    <javac destdir="${src.classes.dir}" classpathref="classpath"
+	           debug="false" nowarn="true"
+	           deprecation="true" encoding="Cp1252"
+	           source="${javac.target}" target="${javac.target}"
+	           includeAntRuntime= "no">
+	        <src path="${src.dir}"/>
+	    </javac>        
+	</target>
+	
+	<target name="jar" depends="compile" description="Create the JAR" >
+	    <jar jarfile="${deploy.dir}/${jar.name}">
+	        <manifest>
+	            <attribute name="Jar-Name" value="${jar.name}"/>
+	            <attribute name="Author" value="Reed Breneman"/>
+	            <attribute name="Implementation-Version" value="1.0"/>
+	            <attribute name="Main-Class" value="rbb.mdexample.Main"/>
+	        </manifest>
+	        <fileset dir="${src.classes.dir}">
+	            <exclude name="**/build.xml"/>
+	            <exclude name="**/build.properties"/>
+	        </fileset>
+	    </jar>
+	</target>
+		
+<!--
+==========================================================================
+            
+            Calling JUnit targets    
+
+==========================================================================
+-->
+	<target name="runTests" depends="initTests, compile-tests, test"/>
+	
+	<target name="compile-tests" depends="compile" if="${testDir.exists}">
+        <javac srcdir="${test.dir}" destdir="${test.classes.dir}" classpathref="test.classpath" deprecation="false" 
+               source="${javac.target}" target="${javac.target}" debug="true" encoding="UTF-8" includeAntRuntime="no"/>    
+    </target> 
+	
+   <target name="test" depends="compile-tests">
+        <antcall target="runtests">
+            <param name="junit.format" value="xml" />
+            <param name="junit.format.usefile" value="true" />
+            <param name="junit.report" value="true" />
+            <param name="haltonfailure" value="false" />
+        </antcall>
+    </target>
+    
+<!--
+==========================================================================
+
+                   RUNNING JUNIT  
+
+==========================================================================
+-->
+    <target name="runtests" depends="compile-tests" if="${testDir.exists}">
+        <condition property="junit.format" value="plain">
+            <not>
+                <isset property="junit.format" />
+            </not>
+        </condition>
+        <condition property="junit.format.usefile" value="plain">
+            <not>
+                <isset property="junit.format.usefile" />
+            </not>
+        </condition>
+        <condition property="junit.pattern" value="**/*Test.class">
+            <not>
+                <isset property="junit.pattern" />
+            </not>
+        </condition>
+        <condition property="should.junit.report">
+            <and>
+                <equals arg1="${junit.format}" arg2="xml" />
+                <istrue value="${junit.format.usefile}" />
+                <istrue value="${junit.report}" />
+            </and>
+        </condition>
+
+        <junit dir="${test.classes.dir}" printsummary="yes" newenvironment="yes" 
+               failureproperty="has.junit.failed" haltonfailure="${haltonfailure}" forkmode="once">    
+            <classpath refid="test.classpath" />
+            <formatter type="${junit.format}" usefile="${junit.format.usefile}" />
+
+            <batchtest fork="yes" todir="${test.classes.dir}">
+                <fileset dir="${test.classes.dir}">
+                    <include name="${junit.pattern}" />
+                </fileset>
+            </batchtest>    
+        </junit>
+
+        <antcall target="reporttests" />    
+        <antcall target="failtests" />    
+    </target>
+
+	<target name = "failtests" if="has.junit.failed" >
+		<fail message="Junits failed. See Logs above (or generated above)" />
+	</target>
+	
+	<!--
+	==========================================================================
+
+	                   JUNIT REPORT     
+
+	==========================================================================
+	-->
+	<target name="reporttests" if="should.junit.report" >
+	    <junitreport todir="${test.classes.dir}">
+	        <fileset dir="${test.classes.dir}" >
+	            <include name="TEST-*.xml"/>
+	        </fileset>
+	        <report format="frames" todir="${test.classes.dir}/report" />
+	    </junitreport>
+	</target>
+	
+</project>
