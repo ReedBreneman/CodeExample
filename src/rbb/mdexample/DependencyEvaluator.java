@@ -16,6 +16,8 @@ package rbb.mdexample;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
@@ -45,7 +47,7 @@ public class DependencyEvaluator {
 	 * @param inputData  The Dependency data to evaluate in the form of
 	 *                   'Key dependency [dependency dependency]'
 	 */
-    DependencyEvaluator(String[] inputData) {
+    DependencyEvaluator(List<String> inputData) {
     	setInputData(inputData);
     }
 	
@@ -54,15 +56,18 @@ public class DependencyEvaluator {
      * 
      * @param inputData
      */
-    public void setInputData(String[] inputData) {
+    public void setInputData(List<String> inputData) {
     	LOGGER.info("Processing input");
-    	if (inputData.length > 0) {
-    		for (int i = 0; i < inputData.length; i++) {
+    	int i = 1;
+    	
+    	if (inputData.size() > 0) {
+    		for (String inputLine : inputData) {
     			try {
-    				processInputLine(inputData[i]);
+    				processInputLine(inputLine);
+    				i++;
     			} catch (InputValidationException ive) {
     				// Perhaps throw again if desire to exit without results generated if that is desired behavior.
-    				LOGGER.severe("Exception encounterered processing input on line " + (i+1) + ": " + ive.getMessage());
+    				LOGGER.severe("Exception encounterered processing input on line " + (i) + ": " + ive.getMessage());
     			}
     		}
     	}
@@ -135,15 +140,41 @@ public class DependencyEvaluator {
 	}
 	
 	/**
-	 * Process the nodes recursively processing dependencies.
+	 * Process the nodes recursively processing dependencies.  
+	 * 
+	 * This is done in 2 methods in case circular references cause the nodes to need to be reprocessed.
+	 * NOTE: I have not determined a data set that needs that triggers reprocessing yet, though with the 
+	 *       break condition in Dependency node for processingNode, it should be necessary given the right data.
 	 */
 	public void calculate() {
 		LOGGER.info("Calculating Dependencies");
 
+		// Set the initial list of nodes to process
+		Collection<DependencyNode> nodesToProcess = mNodes.values();
+		while (!nodesToProcess.isEmpty()) {
+			LOGGER.finer("List of nodes to process " + nodesToProcess.toString());
+			// Process the list and keep a list of nodes that are not complete;
+			Collection<DependencyNode> reprocessingList = processNodes(nodesToProcess);
+			nodesToProcess = reprocessingList;
+		}
+	}
+	
+	/**
+	 * Process a list of nodes to determine dependents.   
+	 * @param nodes               The Collection of nodes to process;
+	 * @return reprocessingNodes  The collection of nodes that may need reprocessing;
+	 */
+	protected Collection<DependencyNode> processNodes(Collection<DependencyNode> nodes)  {
+		ArrayList<DependencyNode> incompleteNodes = new ArrayList<>();
+
 		// Iterate thru the nodes and determine all descendants of each node. 
 		// Each node will determine the descendants for its children and children's children, etc. 
-		for (DependencyNode node : mNodes.values()) {
-			node.determineDescendents(mNodes);
+		for (DependencyNode node : nodes) {
+			if (!node.determineDescendents(mNodes)) {
+				incompleteNodes.add(node);
+			}
 		}
+		
+		return incompleteNodes;
 	}
 }

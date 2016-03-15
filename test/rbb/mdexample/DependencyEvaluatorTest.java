@@ -7,6 +7,8 @@ package rbb.mdexample;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +20,7 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.JVM)
 public class DependencyEvaluatorTest {
 
-	String[] mInputData = { "A B" };
+	static ArrayList<String> mInputData = null;
 
 	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
@@ -28,7 +30,10 @@ public class DependencyEvaluatorTest {
 	@BeforeClass
 	public static void init() {
 		LOGGER.setLevel(Level.SEVERE);
+		mInputData = new ArrayList<>();
+		mInputData.add("A B");
 	}
+		
 	
 	/**
 	 * Test the constructor with no data passed in.
@@ -68,7 +73,8 @@ public class DependencyEvaluatorTest {
 	 */
 	@Test
 	public void testInvalidInputData() {
-		String[] invalidData = { "", "W" };
+		ArrayList<String> invalidData = new ArrayList<>(Arrays.asList("", "W"));
+		
 		DependencyEvaluator de = new DependencyEvaluator();
 		de.setInputData(invalidData);
 		String output = de.generateOutput();

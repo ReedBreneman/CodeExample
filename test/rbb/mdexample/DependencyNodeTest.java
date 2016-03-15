@@ -8,6 +8,7 @@ package rbb.mdexample;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -42,9 +43,7 @@ public class DependencyNodeTest {
 	 */
 	@Before
 	public void setup() {
-		children = new ArrayList<>();
-		children.add(CHILD1);
-		children.add(CHILD2);		
+		children = new ArrayList<>(Arrays.asList(CHILD1, CHILD2));
 	}
 	
 	/**
@@ -52,9 +51,7 @@ public class DependencyNodeTest {
 	 */
 	@Test
 	public void testConstructor() {
-		Set<String> childrenResult = new HashSet<>();
-		childrenResult.add(CHILD1);
-		childrenResult.add(CHILD2);
+		Set<String> childrenResult = new HashSet<>(Arrays.asList(CHILD1, CHILD2));
 		Set<String> descendentResult = new HashSet<>();  //Will be empty unless calculated.
 		
 		DependencyNode dn = new DependencyNode(M_KEY, children);
@@ -90,14 +87,11 @@ public class DependencyNodeTest {
 		Map<String, DependencyNode> nodeMap = new HashMap<>();
 		nodeMap.put(M_KEY, dn);
 
-		Set<String> descendentResult = new HashSet<>();  //Will be empty unless calculated.
-		descendentResult.add("B");
-		descendentResult.add("C");
+		Set<String> descendentResult = new HashSet<>(Arrays.asList("B", "C"));  //Will be empty unless calculated.
 		
 		dn.determineDescendents(nodeMap);
 		assertTrue("Post Caldulate expanded is incorrect", dn.isExpanded());
 		assertFalse("Post Calculate prcessing is incorrect", dn.isProcessing());
-		System.out.println("SimpleCalc" + dn.getKey() + " - " + dn.getAllDescendants());
 		assertEquals("Post Calculate all Descendents is incorrect", descendentResult, dn.getAllDescendants());
 	}
 
@@ -110,21 +104,15 @@ public class DependencyNodeTest {
 		
 		Map<String, DependencyNode> nodeMap = new HashMap<>();
 		nodeMap.put(M_KEY, dn);
-		ArrayList<String> childList = new ArrayList<>();
-		childList.add("C");
-		childList.add("D");
+		ArrayList<String> childList = new ArrayList<>(Arrays.asList("C", "D"));
 		DependencyNode dn2 = new DependencyNode("B", childList);
 		nodeMap.put("B", dn2);
 	
-		Set<String> descendentResult = new HashSet<>();  //Will be empty unless calculated.
-		descendentResult.add("B");
-		descendentResult.add("C");
-		descendentResult.add("D");
+		Set<String> descendentResult = new HashSet<>(Arrays.asList("B", "C", "D"));  //Will be empty unless calculated.
 		
 		dn.determineDescendents(nodeMap);
 		assertTrue("Post Caldulate isExpanded is incorrect", dn.isExpanded());
 		assertFalse("Post Calculate isProcessing is incorrect", dn.isProcessing());
-		System.out.println("DescCalc" + dn.getKey() + " - " + dn.getAllDescendants());
 		assertEquals("Post Calculate all Descendents is incorrect", descendentResult, dn.getAllDescendants());
 	}	
 
@@ -137,21 +125,15 @@ public class DependencyNodeTest {
 		
 		Map<String, DependencyNode> nodeMap = new HashMap<>();
 		nodeMap.put(M_KEY, dn);
-		ArrayList<String> childList = new ArrayList<>();
-		childList.add("C");
-		childList.add("A");
+		ArrayList<String> childList = new ArrayList<>(Arrays.asList("C", "A"));
 		DependencyNode dn2 = new DependencyNode("B", childList);
 		nodeMap.put("B", dn2);
 	
-		Set<String> descendentResult = new HashSet<>();  //Will be empty unless calculated.
-		descendentResult.add("A");
-		descendentResult.add("B");
-		descendentResult.add("C");
+		Set<String> descendentResult = new HashSet<>(Arrays.asList("A", "B", "C"));  //Will be empty unless calculated.
 		
 		dn.determineDescendents(nodeMap);
 		assertTrue("Post Caldulate isExpanded is incorrect", dn.isExpanded());
 		assertFalse("Post Calculate isProcessing is incorrect", dn.isProcessing());
-		System.out.println("CircCalc" + dn.getKey() + " - " + dn.getAllDescendants());
 		assertEquals("Post Calculate circular Descendents is incorrect", descendentResult, dn.getAllDescendants());
 	}	
 }

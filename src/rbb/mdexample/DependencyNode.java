@@ -2,7 +2,7 @@
  * This is a Dependency Node and maintains the key and list of immediate children and the fully evaluated descendants. 
  * 
  * mProcessing is used to break the recursive circular references.
- * mExpanded is set true when the node and all the nodes children have been evaluated and added to the allDependencies list.
+ * mExpanded is set true when the node and all the nodes children have been evaluated and added to the allDependencies list
  * 
  * mKey is the parent node identifier
  * mChildren is the list of children set for this node.
@@ -128,23 +128,23 @@ public class DependencyNode {
 	 * 
 	 * @param nodeSet
 	 */
-	protected void determineDescendents(Map<String, DependencyNode> nodeSet) {
+	protected boolean determineDescendents(Map<String, DependencyNode> nodeSet) {
 		LOGGER.finer("Calculating Node " + mKey);
 		
-		mProcessing = true;
 		if (!mExpanded) {
+			mProcessing = true;
 			mAllDescendants.addAll(mChildren);     //Add the direct children to the all descendants list.
 	
 			setDescendantProcessing(false);
 			//Now iterate thru and add in all the grand children, etc...
 			for (String child : mChildren) {
-				LOGGER.finest("  Processing Child " + mKey + " - " + child);
+				LOGGER.finest("  Processing Node - Child: " + mKey + " - " + child);
 				
 				// Get the child node from the supplied nodeSet domain.
 				DependencyNode childNode = nodeSet.get(child);
 				if (null != childNode) {            // Make sure the child is also a parent to prevent errors.  
 					if (!childNode.isExpanded()) {  // If the child is not already calculated, do the calculation.
-						if (!childNode.isProcessing()) {  //If the node is already being processed, we don't need to process again.
+						if (!childNode.isProcessing()) {  //If the node is already being processed, we don't need evaluate again.
 							childNode.determineDescendents(nodeSet);
 						} else {
 							setDescendantProcessing(true);
@@ -154,9 +154,18 @@ public class DependencyNode {
 					mAllDescendants.addAll(childNode.getAllDescendants());  
 				}
 			}
+			// Don't set expanded to true until descendant processing is complete. 
+			mProcessing = false;  //We are done, so set processing to false;
 			mExpanded = true && !isDescendantProcessing();
 		}
-		mProcessing = false;  //We are done, so set processing to false;
+		return mExpanded;
 	}	
 
+	/**
+	 * Return the key as the string for this node.
+	 */
+	@Override
+	public String toString() {
+		return mKey;
+	}
 }
