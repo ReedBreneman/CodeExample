@@ -105,7 +105,6 @@ public class DependencyEvaluatorTest {
 	 * @param output The output string to validate.
 	 */
 	private void evaluateOutputWithInputData(String output) {
-		System.out.println(output);
 		assertTrue("\'A  B\' string not found in output", output.contains("A  B"));
 	}	
 	
