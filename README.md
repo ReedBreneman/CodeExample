@@ -36,11 +36,11 @@ The result below shows a solution from the set of data above.
 6 | F   H  
 ```
 
-The project is setup and built using Eclipse 'Version: Mars.1 Release (4.5.1)'.
-It was build against and tested against java Version 1.8.0_71.
-The build.xml was tested with ant Version 1.9.6
+The project is setup and built using Eclipse 'Version: Mars.1 Release (4.5.1)'.  
+It was build against and tested against java Version 1.8.0_71.  
+The build.xml was tested with ant Version 1.9.6.  
 
-The one piece that expects the eclipse environment is the junit 4.12.0 libraries sourced from the eclipse plugin directories.
+The one piece that expects the eclipse environment is the junit 4.12.0 libraries sourced from the eclipse plugin directories.  
 You can modify the build.xml & eclipse project classpath to use another instance of junit as needed.
 
 To execute the code please issue the following command:
