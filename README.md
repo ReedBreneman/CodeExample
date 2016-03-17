@@ -44,7 +44,7 @@ The one piece that expects the eclipse environment is the junit 4.12.0 libraries
 You can modify the build.xml & eclipse project classpath to use another instance of junit as needed.
 
 To execute the code please issue the following command:  
-'java -jar DependencyEvaluator.jar [-f <input file name>]'  
+'java -jar DependencyEvaluator.jar [-f \<input file name\>]'  
 The default input file is './data/input.dat'.
 
 There is a compiled DependencyEvaluator.jar file is available in the 'deploy' folder.
